@@ -42,6 +42,10 @@ module Gauss
           def validate_max(attribute:, value:)
             attribute <= value
           end
+
+          def validate_in(attribute:, value:)
+            value.include?(attribute)
+          end
         end
       end
 
@@ -59,11 +63,9 @@ module Gauss
 
       def validate(attribute:, value:, validation_hash:)
         validation_hash.each do |key, hash_value|
-          unless self.class.send("validate_#{key}".to_sym,
-                                 attribute: hash_value,
-                                 value: value)
+          unless self.class.send("validate_#{key}".to_sym, attribute: hash_value, value: value)
             message = const_get("Gauss::Validators::Messages::#{key.upcase}".to_sym)
-            errors[attribute] = [*(errors[attribute] || []), message]
+            errors[attribute] = [*(errors[attribute] || []), "#{message}: #{hash_value}"]
           end
         end
       end

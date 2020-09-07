@@ -1,20 +1,30 @@
 # frozen_string_literal: true
 
-require 'csv'
-
 module Gauss
-  class Vendor
-    attr_reader :changes, :items, :changes_path, :items_path
+  # Gauss::Store -> store for products, changes in the future could wrap redis
+  class Store
+    attr_reader :store
 
-    def initialize(items_path:, changes_path:)
-      @items_path = items
-      @changes_path = changes
+    def initialize
+      @store = {}
     end
 
-    private
+    def load(key:, entries:)
+      store[key] = entries
+    end
 
-    def load_items
-      # the goal here will be to load those items from the path and return
+    def add(key:, entry:)
+      items = store.fetch(key, [])
+      items.push(entry)
+      store[key] = items
+    end
+
+    def fetch(key:)
+      if block_given?
+        yield store[key]
+      else
+        store[key]
+      end
     end
   end
 end

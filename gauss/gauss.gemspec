@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 Gem::Specification.new do |s|
-  s.name = 'my_gem'
+  s.name = 'Gauss'
   s.version = '0.0.1'
-  s.date = '2011-09-29'
-  s.summary = 'my_gem is an awesome gem'
+  s.date = '2020-09-07'
+  s.summary = 'Vending machine'
   s.files = [
     'Gemfile',
     'Rakefile',

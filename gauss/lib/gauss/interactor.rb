@@ -17,8 +17,8 @@ module Gauss
       new(products_path: products_path, changes_path: changes_path).run
     end
 
-    def run
-      puts Gauss::Messages::WELCOME
+    def run(initial: true)
+      puts Gauss::Messages::WELCOME if initial
       cmd = gets.chomp
       if valid_cmd?(cmd: cmd)
         execute_cmd(cmd: cmd)
@@ -26,7 +26,7 @@ module Gauss
         puts Gauss::Messages::INVALID_CMD
       end
 
-      run
+      run(initial: false)
     end
 
     alias help run
@@ -35,13 +35,13 @@ module Gauss
       exe = cmd.dup
       exe.slice!('Give me').chomp
       name, quantity = exe.split(',').map(&:strip)
-      puts vendor.fetch_product(name: name, quantity: quantity)
+      vendor.fetch_product(name: name, quantity: quantity)
     end
 
     def process_transaction(cmd:)
       amount = cmd.dup
       amount.slice!('Take').chomp
-      puts vendor.process_transaction(amount: amount)
+      vendor.process_transaction(amount: amount)
     end
 
     private
@@ -54,6 +54,10 @@ module Gauss
     def execute_cmd(cmd:)
       target_cmd = Gauss::Commands::REQUESTS.values.find { |cmnd| cmd.start_with?(cmnd.first) }
       puts send(Gauss::Commands::REQUESTS.key(target_cmd), cmd: cmd)
+    end
+
+    def help(_)
+      run(initial: true)
     end
 
     def method_missing(method, *args)

@@ -2,6 +2,7 @@
 
 require 'csv'
 require 'gauss/context'
+require 'gauss/messages'
 require 'gauss/service/transaction'
 
 module Gauss
@@ -16,6 +17,7 @@ module Gauss
     end
 
     def reload(_args)
+      store.purge
       create_records
       context.succeed(message: Gauss::Messages::LOAD_SUCCESS) if context.success
 
@@ -50,17 +52,13 @@ module Gauss
       if product
         valid_amount = amount.dup
         valid_amount.chomp('£')
-        Gauss::Service::Transaction.new(amount: valid_amount,
-                                        store: store,
-                                        record: product,
-                                        quantity: quantity,
-                                        context: context).perform
-
+        args = { amount: valid_amount, store: store, record: product, quantity: quantity, context: context }
+        Gauss::Service::Transaction.new(**args).perform
       else
         context.fail!(error: Gauss::Error.new(Gauss::Messages::NO_PRODUCT))
       end
 
-      context.payload || context.message
+      context.errors.any? ? context.message : humanize_change_payload(changes: context.payload)
     end
 
     private
@@ -98,6 +96,19 @@ module Gauss
     def attributes_for(klass:, row:)
       klass.fields.each_with_index.each_with_object({}) do |(field, i), hash|
         hash[field] = row[i]
+      end
+    end
+
+    def humanize_change_payload(changes:)
+      subtotal = lambda do |change|
+        unit = change.dig(:amount)[-1..-1]
+        "#{change.dig(:count).to_f * change.dig(:amount).to_f}#{unit}"
+      end
+      changes.reduce(Gauss::Messages::CHANGE_INFO) do |str, change|
+        <<-STR
+          #{str}\n
+          amount: #{change.dig(:amount)}, count: #{change.dig(:count)}, sub: #{subtotal.call(change)}
+        STR
       end
     end
   end

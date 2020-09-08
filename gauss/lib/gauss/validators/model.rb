@@ -71,8 +71,11 @@ module Gauss
 
       def validate(attribute:, value:, validation_hash:)
         validation_hash.each do |key, hash_value|
-          unless self.class.send("validate_#{key}".to_sym, attribute: value, value: hash_value)
-            message = const_get("Gauss::Validators::Messages::#{key.upcase}".to_sym)
+          unless self.class.send("validate_#{key}".to_sym, 
+                                 attribute: value, 
+                                 value: hash_value)
+            const_sym = "Gauss::Validators::Messages::#{key.upcase}".to_sym
+            message = const_get(const_sym)
             errors[attribute] = [*(errors[attribute] || []), "#{message}: #{hash_value}"]
           end
         end

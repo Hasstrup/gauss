@@ -17,13 +17,16 @@ module Gauss
 
       Help guide:
         - CMD: 'What do you have?' - I'll show you all the items in stock/and their prices
-        - CMD: 'Give me '{{ name of product, quantity }}' - I'll tell you the price and subsequently ask you for the amount of money
-        - CMD: 'Take {{ amount of money (£1.2, 0.2£) }}' - I'll try to get the item for you if enough money is provided else ---\__(o_o)__/--
+        - CMD: 'Give me '{{ name of product,quantity }}' - I'll tell you the price and subsequently ask you for the amount of money
+        - CMD: 'Take {{ amount of money (1.2, 0.2£, 1.3) }}' - I'll try to get the item for you if enough money is provided else ---\__(o_o)__/--
         - CMD: 'Help': I'll share this again
         - CMD: 'Load': I'll reset the records and sync with what's in the csv
         - CMD: 'Gauss Thanks': Alright ciao!
 
       What would you like to do?
+    STR
+    CHANGE_INFO = <<-STR
+    ** Here's your change**
     STR
     INVALID_CMD = <<-STR
      **Sorry I dont understand that command**
@@ -38,7 +41,7 @@ module Gauss
       Can not proceed withoutt selectting a procutt
     STR
     INSUFFICIENT_FUNDS = <<-STR
-      ** Insufficient funds **
+      **Insufficient funds**
     STR
     NOT_CHANGEABLE = <<-STR
      **I don't have that much change, enter a lower denomination**

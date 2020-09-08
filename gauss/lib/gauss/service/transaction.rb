@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'pry'
 require 'gauss/error'
 require 'gauss/messages'
@@ -25,7 +26,11 @@ module Gauss
             return context.fail!(error: error_klass.new(Gauss::Messages::NOT_CHANGEABLE))
           end
 
-          context.payload!(payload: issue_changes)
+          changes = issue_changes.dig(:changes)
+          update_count(records: [{ name: record.name, count: quantity }], klass: record.class, accessor: :name)
+          update_count(records: changes, klass: Gauss::Change, accessor: :amount)
+
+          context.payload!(payload: changes)
         end
       end
 
@@ -47,12 +52,13 @@ module Gauss
       def issue_changes
         changes.each_with_object(remainder: diff, changes: []) do |change, sum|
           next if sum[:remainder].zero?
-  
+
           quotient = (sum[:remainder] / change.dig(:value)).to_i
           quotient = change.dig(:count) if quotient > change.dig(:count)
-          remainder = sum[:remainder] - (change.dig(:value) * quotient)
-          sum[:remainder] = remainder
-          sum[:changes] = [*sum[:changes], { quotient: quotient, change: change.dig(:original_value) }]
+          sum[:remainder] = sum[:remainder] - (change.dig(:value) * quotient)
+          unless quotient.zero?
+            sum[:changes] << { count: quotient, amount: change.dig(:original_value) }
+          end
         end
       end
 
@@ -66,9 +72,14 @@ module Gauss
         store.load(key: Gauss::Change.store_key, entriies: store_changes)
       end
 
-      def updae_change_count; end
-
-      def update_product_count; end
+      def update_count(records:, klass:, accessor:)
+        records.each do |record|
+          args = { key: record[accessor], store_key: klass.store_key, attribute: accessor }
+          current_item = store.fetch(**args)
+          current_item[:count] = current_item[:count] - record[:count]
+          store.update(**args.merge(changes: current_item))
+        end
+      end
 
       def diff
         @diff ||= (amount.round(2) - (record.amount.to_f.round(2) * quantity)) * 100

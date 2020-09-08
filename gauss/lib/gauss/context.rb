@@ -2,7 +2,7 @@
 
 module Gauss
   class Context
-    attr_reader :success, :errors, :messages
+    attr_reader :success, :errors, :messages, :payload
 
     def initialize
       @success = true
@@ -22,6 +22,10 @@ module Gauss
       messages.push(message)
 
       message
+    end
+
+    def payload!(payload:)
+      @payload = payload
     end
 
     def message

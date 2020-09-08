@@ -2,6 +2,7 @@
 
 require 'csv'
 require 'gauss/context'
+require 'gauss/service/transaction'
 
 module Gauss
   # Gauss::Vendor main actor for loading and fetching products
@@ -12,17 +13,6 @@ module Gauss
       @products_path = products_path
       @changes_path = changes_path
       @context = Gauss::Context.new
-    end
-
-    def self.load(products_path:, changes_path:)
-      vendor = new(products_path: products_path, changes_path: changes_path)
-      vendor.create_records
-      vendor
-    end
-
-    def create_records
-      load_products
-      load_changes
     end
 
     def reload(_args)
@@ -54,10 +44,28 @@ module Gauss
       context.message
     end
 
+    def process_transaction(amount:)
+      if product
+        Gauss::Service::Transaction.new(amount: amount,
+                                        store: store,
+                                        record: product,
+                                        context: context).perform
+
+        context.payload
+      else
+        context.fail!(error: Gauss::Error.new(Gauss::Messages::NO_PRODUCT))
+      end
+    end
+
     private
 
     def store
       @store ||= Gauss::Store.new
+    end
+
+    def create_records
+      load_products
+      load_changes
     end
 
     def load_products

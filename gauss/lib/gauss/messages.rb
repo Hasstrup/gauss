@@ -24,17 +24,23 @@ module Gauss
 
       What would you like to do?
     STR
-
     INVALID_CMD = <<-STR
      **Sorry I dont understand that command**
     STR
-
     LOAD_SUCCESS = <<-STR
       **Successfully loaded products and changes**
     STR
-
     RECORD_NOT_FOUND = <<-STR
       **Sorry there's no product matching that name**
+    STR
+    NO_PRODUCT = <<-STR
+      Can not proceed withoutt selectting a procutt
+    STR
+    INSUFFICIENT_FUNDS = <<-STR
+      ** Insufficient funds **
+    STR
+    NOT_CHANGEABLE = <<-STR
+     **I don't have that much change, enter a lower denomination**
     STR
   end
 end

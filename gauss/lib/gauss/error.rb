@@ -12,4 +12,7 @@ module Gauss
       JSON.stringify(errors)
     end
   end
+
+  class TransactionError < Error
+  end
 end

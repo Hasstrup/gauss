@@ -27,5 +27,9 @@ module Gauss
 
       result
     end
+
+    def records(store_key:)
+      store.dig(store_key)
+    end
   end
 end

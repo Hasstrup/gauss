@@ -6,7 +6,7 @@ require 'gauss/context'
 module Gauss
   # Gauss::Vendor main actor for loading and fetching products
   class Vendor
-    attr_reader :changes_path, :products_path, :context
+    attr_reader :changes_path, :products_path, :context, :product
 
     def initialize(products_path:, changes_path:)
       @products_path = products_path
@@ -32,6 +32,28 @@ module Gauss
       context.message
     end
 
+    def inventory(_)
+      store.store
+    end
+
+    def fetch_product(name:, quantity:)
+      store.fetch(key: name, store_key: Gauss::Product.store_key) do |record|
+        unless record
+          return context.fail!(error: Gauss::Error.new(Gauss::Messages::RECORD_NOT_FOUND))
+        end
+
+        @product = Gauss::Product.new(*record)
+        if product.count < quantity.to_i
+          context.fail!(error: Gauss::Error.new("I only have #{product.count} left"))
+        else
+          price = (quantity.to_f * product.amount).round(2)
+          context.succeed(message: "That would cost you £#{price}, Please enter your money")
+        end
+      end
+
+      context.message
+    end
+
     private
 
     def store
@@ -49,7 +71,9 @@ module Gauss
     def load(klass:, path:)
       CSV.read(path).drop(1).each_with_index do |row, index|
         record = klass.new(*attributes_for(klass: klass, row: row))
-        next store.add(key: klass.store_key, entry: record) if record.valid?
+        if record.valid?
+          next store.add(key: klass.store_key, entry: record.humanize)
+        end
 
         raise Gauss::Error, "#{klass.store_key} failed, errors: #{record.errors} at position: #{index}"
       end

@@ -13,10 +13,15 @@ module Gauss
     def fail!(error:)
       @success = false
       errors.push(error)
+
+      message
     end
 
     def succeed(message:)
+      @errors = []
       messages.push(message)
+
+      message
     end
 
     def message

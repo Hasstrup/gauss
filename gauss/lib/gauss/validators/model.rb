@@ -15,7 +15,6 @@ module Gauss
           end
 
           def validates(attr_name, **options)
-            # TODO: { Use a model/OStruct instead of hash}
             validations.push(options.merge(name: attr_name))
           end
 

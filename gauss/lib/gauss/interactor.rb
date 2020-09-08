@@ -31,6 +31,13 @@ module Gauss
 
     alias help run
 
+    def fetch_product(cmd:)
+      exe = cmd.dup
+      exe.slice!('Give me').chomp
+      name, quantity = exe.split(',').map(&:strip)
+      puts vendor.fetch_product(name: name, quantity: quantity)
+    end
+
     private
 
     def valid_cmd?(cmd:)
@@ -40,7 +47,7 @@ module Gauss
 
     def execute_cmd(cmd:)
       target_cmd = Gauss::Commands::REQUESTS.values.find { |cmnd| cmd.start_with?(cmnd.first) }
-      puts send(Gauss::Commands::REQUESTS.key(target_cmd), cmd)
+      puts send(Gauss::Commands::REQUESTS.key(target_cmd), cmd: cmd)
     end
 
     def method_missing(method, *args)

@@ -13,7 +13,7 @@ module Gauss
       attr_reader :fields
 
       def store_key
-        "#{self.class.name.downcase}s"
+        "#{name.downcase}s"
       end
 
       def attributes(*attribute_list)
@@ -27,6 +27,12 @@ module Gauss
       attributes.each do |key, value|
         type = self.class.validations.find { |validator| validator.dig(:name) == key }&.dig(:type)
         instance_variable_set("@#{key}", send(type.to_s, value))
+      end
+    end
+
+    def humanize
+      self.class.fields.each_with_object({}) do |field, hash|
+        hash[field] = send(field)
       end
     end
   end

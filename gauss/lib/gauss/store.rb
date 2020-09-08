@@ -19,12 +19,13 @@ module Gauss
       store[key] = items
     end
 
-    def fetch(key:)
-      if block_given?
-        yield store[key]
-      else
-        store[key]
+    def fetch(key:, store_key:)
+      result = store.dig(store_key)&.find do |record|
+        record.dig(:name) == key
       end
+      yield result if block_given?
+
+      result
     end
   end
 end

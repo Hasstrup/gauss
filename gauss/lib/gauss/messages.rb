@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
-# frozen_string_literal
-
 module Gauss
   # Gauss::Messages - save all the cmds for gauss
+  module Commands
+    REQUESTS = {
+      reload: ['Reload'],
+      help: ['Help'],
+      fetch_product: ['Give me']
+    }.freeze
+  end
   module Messages
     WELCOME = <<-STR
-      Hi I'm Gauss,
-      Before you saw this message, I had loaded the products and changes in the
-      products.csv & changes.csv files at the root folder, feel free to make changes
-      and send "reload" so I can see your latest changes. If
+      Hi I'm Gauss, and here's how I can help you
 
       Help guide:
         - CMD: 'what do you have?' - I'll show you all the items in stock/and their prices
@@ -20,6 +22,14 @@ module Gauss
         - CMD: 'Gauss Thanks': Alright ciao!
 
       What would you like to do?
+    STR
+
+    INVALID_CMD = <<-STR
+    Sorry I dont understand that command
+    STR
+
+    LOAD_SUCCESS = <<-STR
+      Successfully loaded products and changes
     STR
   end
 end

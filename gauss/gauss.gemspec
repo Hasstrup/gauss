@@ -13,4 +13,6 @@ Gem::Specification.new do |s|
     'Rakefile'
   ]
   s.require_paths = ['lib']
+
+  s.add_dependency 'pry'
 end

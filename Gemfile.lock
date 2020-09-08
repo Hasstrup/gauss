@@ -2,6 +2,7 @@ PATH
   remote: gauss
   specs:
     gauss (0.0.1)
+      pry
 
 GEM
   remote: https://rubygems.org/

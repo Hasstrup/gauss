@@ -1,14 +1,17 @@
 # frozen_string_literal: true
+
 require 'csv'
+require 'gauss/context'
 
 module Gauss
   # Gauss::Vendor main actor for loading and fetching products
   class Vendor
-    attr_reader :changes_path, :products_path
+    attr_reader :changes_path, :products_path, :context
 
     def initialize(products_path:, changes_path:)
       @products_path = products_path
       @changes_path = changes_path
+      @context = Gauss::Context.new
     end
 
     def self.load(products_path:, changes_path:)
@@ -20,8 +23,13 @@ module Gauss
     def create_records
       load_products
       load_changes
+    end
 
-      raise Gauss::LoadError, load_errors if load_errors.any?
+    def reload(_args)
+      create_records
+      context.succeed(message: Gauss::Messages::LOAD_SUCCESS) if context.success
+
+      context.message
     end
 
     private
@@ -39,23 +47,20 @@ module Gauss
     end
 
     def load(klass:, path:)
-      CSV.read(path).drop(0).each_with_index do |row, index|
+      CSV.read(path).drop(1).each_with_index do |row, index|
         record = klass.new(*attributes_for(klass: klass, row: row))
         next store.add(key: klass.store_key, entry: record) if record.valid?
 
-        load_errors.push(registry: klass.store_key,
-                         position: index,
-                         errors: record.errors)
+        raise Gauss::Error.new("#{klass.store_key} failed, errors: #{record.errors} at position: #{index}")
       end
-    end
-
-    def load_errors
-      @load_errors ||= []
+    rescue ::CSV::MalformedCSVError, Gauss::Error => e
+      context.fail!(error: e)
     end
 
     def attributes_for(klass:, row:)
       klass.fields.each_with_index.reduce({}) do |hash, (field, i)|
         hash[field] = row[i]
+        hash
       end
     end
   end

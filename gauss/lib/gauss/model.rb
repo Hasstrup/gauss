@@ -1,5 +1,7 @@
 # frozen_string_literal: true
+
 require 'gauss/validators/model'
+require 'securerandom'
 
 module Gauss
   # Gauss::Model bunch of methods for data access objects
@@ -10,7 +12,7 @@ module Gauss
     class << self
       attr_reader :fields
 
-      def self.store_key
+      def store_key
         "#{self.class.name.downcase}s"
       end
 
@@ -20,10 +22,11 @@ module Gauss
       end
     end
 
-    def initialize(attributes)
+    def initialize(*attributes)
       @id = SecureRandom.uuid
       attributes.each do |key, value|
-        instance_variable_set(key, value)
+        type = self.class.validations.find { |validator| validator.dig(:name) == key }&.dig(:type)
+        instance_variable_set("@#{key}", send(type.to_s, value))
       end
     end
   end

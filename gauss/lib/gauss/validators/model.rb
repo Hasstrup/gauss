@@ -10,6 +10,8 @@ module Gauss
           def new(*args)
             model = __new(*args)
             model.run_validations!
+
+            model
           end
 
           def validates(attr_name, **options)
@@ -21,14 +23,14 @@ module Gauss
             @errors ||= {}
           end
 
-          private
-
           def validations
             @validations ||= []
           end
 
-          def validate_presence(attribute:, _value: nil)
-            attribute.present?
+          private
+
+          def validate_presence(attribute:, value: nil)
+            !attribute.nil?
           end
 
           def validate_type(attribute:, value:)
@@ -36,11 +38,11 @@ module Gauss
           end
 
           def validate_min(attribute:, value:)
-            attribute >= value
+            attribute.to_f >= value
           end
 
           def validate_max(attribute:, value:)
-            attribute <= value
+            attribute.to_f <= value
           end
 
           def validate_in(attribute:, value:)
@@ -53,8 +55,15 @@ module Gauss
         self.class.validations.each do |validator|
           validate(attribute: validator.dig(:name),
                    value: send(validator.dig(:name)),
-                   validation_hash: validator.except(:name))
+                   validation_hash: validator.slice(:type, 
+                                                :presence,
+                                                :min,
+                                                :max).compact)
         end
+      end
+
+      def errors
+        self.class.errors
       end
 
       def valid?
@@ -63,7 +72,7 @@ module Gauss
 
       def validate(attribute:, value:, validation_hash:)
         validation_hash.each do |key, hash_value|
-          unless self.class.send("validate_#{key}".to_sym, attribute: hash_value, value: value)
+          unless self.class.send("validate_#{key}".to_sym, attribute: value, value: hash_value)
             message = const_get("Gauss::Validators::Messages::#{key.upcase}".to_sym)
             errors[attribute] = [*(errors[attribute] || []), "#{message}: #{hash_value}"]
           end

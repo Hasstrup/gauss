@@ -35,7 +35,7 @@ module Gauss
       **Successfully loaded products and changes**
     STR
     RECORD_NOT_FOUND = <<-STR
-      **Sorry there's no product matching that name**
+      **Sorry there's no record matching that input**
     STR
     NO_PRODUCT = <<-STR
       Can not proceed withoutt selectting a procutt

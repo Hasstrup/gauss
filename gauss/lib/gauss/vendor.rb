@@ -30,11 +30,6 @@ module Gauss
 
     def fetch_product(name:, quantity:)
       store.fetch(key: name, store_key: Gauss::Product.store_key) do |record|
-        unless record
-          context.fail!(error: Gauss::Error.new(Gauss::Messages::RECORD_NOT_FOUND))
-          return context.message
-        end
-
         @product = Gauss::Product.new(*record)
         @quantity = quantity
         if product.count < quantity.to_i
@@ -46,6 +41,8 @@ module Gauss
       end
 
       context.message
+    rescue Gauss::StoreError::RecordNotFound => e
+      context.fail(error: e)
     end
 
     def process_transaction(amount:)

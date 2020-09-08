@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
+require 'gauss/error'
+require 'gauss/messages'
+
 module Gauss
-  # Gauss::Store -> store for products, changes in the future could wrap redis
+  # Gauss::Store store for products, changes. in the future could wrap redis
   class Store
     attr_reader :store
 
@@ -23,6 +26,8 @@ module Gauss
       result = store.dig(store_key)&.find do |record|
         record.dig(attribute) == key
       end
+      raise Gauss::StoreError::RecordNotFound unless result
+
       yield result if block_given?
 
       result

@@ -7,7 +7,7 @@ require 'gauss/service/transaction'
 module Gauss
   # Gauss::Vendor main actor for loading and fetching products
   class Vendor
-    attr_reader :changes_path, :products_path, :context, :product
+    attr_reader :changes_path, :products_path, :context, :product, :quantity
 
     def initialize(products_path:, changes_path:)
       @products_path = products_path
@@ -29,10 +29,12 @@ module Gauss
     def fetch_product(name:, quantity:)
       store.fetch(key: name, store_key: Gauss::Product.store_key) do |record|
         unless record
-          return context.fail!(error: Gauss::Error.new(Gauss::Messages::RECORD_NOT_FOUND))
+          context.fail!(error: Gauss::Error.new(Gauss::Messages::RECORD_NOT_FOUND))
+          return context.message
         end
 
         @product = Gauss::Product.new(*record)
+        @quantity = quantity
         if product.count < quantity.to_i
           context.fail!(error: Gauss::Error.new("I only have #{product.count} left"))
         else
@@ -46,15 +48,19 @@ module Gauss
 
     def process_transaction(amount:)
       if product
-        Gauss::Service::Transaction.new(amount: amount,
+        valid_amount = amount.dup
+        valid_amount.chomp('£')
+        Gauss::Service::Transaction.new(amount: valid_amount,
                                         store: store,
                                         record: product,
+                                        quantity: quantity,
                                         context: context).perform
 
-        context.payload
       else
         context.fail!(error: Gauss::Error.new(Gauss::Messages::NO_PRODUCT))
       end
+
+      context.payload || context.message
     end
 
     private

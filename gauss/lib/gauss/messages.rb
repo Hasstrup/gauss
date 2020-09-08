@@ -7,7 +7,8 @@ module Gauss
       reload: ['Load'],
       help: ['Help'],
       fetch_product: ['Give me'],
-      inventory: ['What do you have?']
+      inventory: ['What do you have?'],
+      process_transaction: ['Take']
     }.freeze
   end
   module Messages
@@ -17,7 +18,7 @@ module Gauss
       Help guide:
         - CMD: 'What do you have?' - I'll show you all the items in stock/and their prices
         - CMD: 'Give me '{{ name of product, quantity }}' - I'll tell you the price and subsequently ask you for the amount of money
-        - CMD: 'Take {{ amount of money (2p, 14p, £1.2) }}' - I'll try to get the item for you if enough money is provided else ---\__(o_o)__/--
+        - CMD: 'Take {{ amount of money (£1.2, 0.2£) }}' - I'll try to get the item for you if enough money is provided else ---\__(o_o)__/--
         - CMD: 'Help': I'll share this again
         - CMD: 'Load': I'll reset the records and sync with what's in the csv
         - CMD: 'Gauss Thanks': Alright ciao!

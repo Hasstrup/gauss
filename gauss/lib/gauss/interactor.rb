@@ -38,6 +38,12 @@ module Gauss
       puts vendor.fetch_product(name: name, quantity: quantity)
     end
 
+    def process_transaction(cmd:)
+      amount = cmd.dup
+      amount.slice!('Take').chomp
+      puts vendor.process_transaction(amount: amount)
+    end
+
     private
 
     def valid_cmd?(cmd:)

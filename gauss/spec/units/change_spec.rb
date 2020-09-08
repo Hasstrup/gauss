@@ -7,6 +7,7 @@ RSpec.describe Gauss::Change do
   let(:target_change) { described_class.new(*attributes) }
   describe 'Validations' do
     let(:attributes) { { count: 10, amount: '2p' } }
+
     it 'is valid with the right attributes' do
       expect(target_change).to be_valid
     end
@@ -40,6 +41,7 @@ RSpec.describe Gauss::Change do
 
   describe 'humanize' do
     let(:attributes) { { amount: '10p', count: 5 } }
+
     it "returns a hash of it's fields" do
       expect(target_change.humanize).to eq(attributes)
     end
@@ -48,6 +50,7 @@ RSpec.describe Gauss::Change do
   describe 'Class methods' do
     describe '.store_key' do
       let(:attributes) { { amount: '10p', count: 5 } }
+
       it 'is the name of the pluralized name of class' do
         expect(target_change.class.store_key).to eq('gauss::changes')
       end

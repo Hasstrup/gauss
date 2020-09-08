@@ -59,6 +59,7 @@ module Gauss
                    validation_hash: validator.slice(:type,
                                                     :presence,
                                                     :min,
+                                                    :in,
                                                     :max).compact)
         end
       end
@@ -73,12 +74,10 @@ module Gauss
 
       def validate(attribute:, value:, validation_hash:)
         validation_hash.each do |key, hash_value|
-          next if self.class.send("validate_#{key}".to_sym,
-                                  attribute: value,
-                                  value: hash_value)
-
-          message = self.class.const_get("Gauss::Validators::Messages::#{key.upcase}")
-          errors[attribute] = [*(errors[attribute] || []), "#{message}: #{hash_value}"]
+          unless self.class.send("validate_#{key}".to_sym, attribute: value, value: hash_value)
+            message = self.class.const_get("Gauss::Validators::Messages::#{key.upcase}")
+            errors[attribute] = [*(errors[attribute] || []), "#{message}: #{hash_value}"]
+          end
         end
       end
     end

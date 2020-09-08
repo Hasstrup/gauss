@@ -25,6 +25,7 @@ module Gauss
     end
 
     def payload!(payload:)
+      @errors = []
       @payload = payload
     end
 

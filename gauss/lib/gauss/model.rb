@@ -25,8 +25,12 @@ module Gauss
     def initialize(*attributes)
       @id = SecureRandom.uuid
       attributes.each do |key, value|
-        type = self.class.validations.find { |validator| validator.dig(:name) == key }&.dig(:type)
-        instance_variable_set("@#{key}", send(type.to_s, value))
+        begin
+          type = self.class.validations.find { |validator| validator.dig(:name) == key }&.dig(:type)
+          instance_variable_set("@#{key}", send(type.to_s, value))
+        rescue TypeError, ArgumentError
+          instance_variable_set("@#{key}", nil)
+        end
       end
     end
 

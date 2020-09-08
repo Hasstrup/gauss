@@ -2,4 +2,6 @@
 
 source 'https://rubygems.org'
 
+gem 'gauss', path: './gauss'
+gem 'pry'
 gem 'rubocop-airbnb'

@@ -55,10 +55,10 @@ module Gauss
         self.class.validations.each do |validator|
           validate(attribute: validator.dig(:name),
                    value: send(validator.dig(:name)),
-                   validation_hash: validator.slice(:type, 
-                                                :presence,
-                                                :min,
-                                                :max).compact)
+                   validation_hash: validator.slice(:type,
+                                                    :presence,
+                                                    :min,
+                                                    :max).compact)
         end
       end
 

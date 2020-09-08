@@ -51,16 +51,15 @@ module Gauss
         record = klass.new(*attributes_for(klass: klass, row: row))
         next store.add(key: klass.store_key, entry: record) if record.valid?
 
-        raise Gauss::Error.new("#{klass.store_key} failed, errors: #{record.errors} at position: #{index}")
+        raise Gauss::Error, "#{klass.store_key} failed, errors: #{record.errors} at position: #{index}"
       end
     rescue ::CSV::MalformedCSVError, Gauss::Error => e
       context.fail!(error: e)
     end
 
     def attributes_for(klass:, row:)
-      klass.fields.each_with_index.reduce({}) do |hash, (field, i)|
+      klass.fields.each_with_index.each_with_object({}) do |(field, i), hash|
         hash[field] = row[i]
-        hash
       end
     end
   end

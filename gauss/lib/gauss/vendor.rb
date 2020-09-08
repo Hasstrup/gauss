@@ -38,10 +38,10 @@ module Gauss
         @product = Gauss::Product.new(*record)
         @quantity = quantity
         if product.count < quantity.to_i
-          context.fail!(error: Gauss::Error.new("I only have #{product.count} left"))
+          context.fail!(error: Gauss::Error.new("**I only have #{product.count} left**"))
         else
           price = (quantity.to_f * product.amount).round(2)
-          context.succeed(message: "That would cost you £#{price}, Please enter your money")
+          context.succeed(message: "**That would cost you £#{price}, Please enter your money**")
         end
       end
 
@@ -87,7 +87,7 @@ module Gauss
           next store.add(key: klass.store_key, entry: record.humanize)
         end
 
-        raise Gauss::Error, "#{klass.store_key} failed, errors: #{record.errors} at position: #{index}"
+        raise Gauss::Error, "**#{klass.store_key} failed, errors: #{record.errors} at position: #{index}**"
       end
     rescue ::CSV::MalformedCSVError, Gauss::Error => e
       context.fail!(error: e)

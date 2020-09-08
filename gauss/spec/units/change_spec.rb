@@ -5,7 +5,8 @@ require 'gauss/change'
 
 RSpec.describe Gauss::Change do
   let(:target_change) { described_class.new(*attributes) }
-  describe 'Validations' do
+
+  describe 'validations' do
     let(:attributes) { { count: 10, amount: '2p' } }
 
     it 'is valid with the right attributes' do

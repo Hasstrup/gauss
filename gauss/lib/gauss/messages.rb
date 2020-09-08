@@ -26,7 +26,7 @@ module Gauss
       What would you like to do?
     STR
     CHANGE_INFO = <<-STR
-    ** Here's your change**
+    **Here's your change**
     STR
     INVALID_CMD = <<-STR
      **Sorry I dont understand that command**

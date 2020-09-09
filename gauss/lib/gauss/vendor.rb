@@ -61,13 +61,13 @@ module Gauss
       context.errors.any? ? context.message : humanize_change_payload(changes: context.payload)
     end
 
-    private
-
-    attr_reader :changes_path, :products_path, :product, :quantity
-
     def store
       @store ||= Gauss::Store.new
     end
+
+    private
+
+    attr_reader :changes_path, :products_path, :product, :quantity
 
     def create_records
       load_products

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'pry'
 require 'gauss/error'
 require 'gauss/messages'
+require 'gauss/change'
 
 module Gauss
   module Service
@@ -18,7 +18,7 @@ module Gauss
       end
 
       def perform
-        safely_execute do
+        within_transaction do
           unless amount_sufficient?
             return context.fail!(error: error_klass.new(Gauss::Messages::INSUFFICIENT_FUNDS))
           end
@@ -69,7 +69,7 @@ module Gauss
 
       def rollback_db
         store.load(key: record.class.store_key, entries: records)
-        store.load(key: Gauss::Change.store_key, entriies: store_changes)
+        store.load(key: Gauss::Change.store_key, entries: store_changes)
       end
 
       def update_count(records:, klass:, accessor:)
@@ -100,7 +100,7 @@ module Gauss
         end
       end
 
-      def safely_execute(&block)
+      def within_transaction(&block)
         snapshot_db
         block.call
       rescue Gauss::Error => e

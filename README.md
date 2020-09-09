@@ -9,8 +9,13 @@ Gauss is a pretty cool vending machine that runs on your terminal.
 * Taking in some money for the product
 * Giving you your change/ If there be a need ✅
 
+#### Dependencies
+* Ruby (2.5.1>)
+* Bundler
+
 ##### Getting Started
 
+* git
 * Download the code
 * You will be needing to have bundler installed
 * run `bundle install`
@@ -39,10 +44,5 @@ I opted to build a terminal application (as opposed to building a full UI set) b
 #### Specs 
 Specs are right now written in the gem and can be run by: 
 `cd gauss && rspec`
-
-#### Dependencies
-* Ruby
-* Bundler
-
 
 Feel free to contact me (hasstrup.ezekiel@gmail.com) if you run into any problems

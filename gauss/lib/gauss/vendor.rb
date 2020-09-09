@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
 require 'csv'
+require 'gauss/change'
 require 'gauss/context'
+require 'gauss/store'
+require 'gauss/product'
 require 'gauss/messages'
 require 'gauss/service/transaction'
 
 module Gauss
   # Gauss::Vendor main actor for loading and fetching products
   class Vendor
-    attr_reader :changes_path, :products_path, :context, :product, :quantity
+    attr_reader :context
 
     def initialize(products_path:, changes_path:)
       @products_path = products_path
@@ -16,7 +19,7 @@ module Gauss
       @context = Gauss::Context.new
     end
 
-    def reload(_args)
+    def reload(_args = nil)
       store.purge
       create_records
       context.succeed(message: Gauss::Messages::LOAD_SUCCESS) if context.success
@@ -24,7 +27,7 @@ module Gauss
       context.message
     end
 
-    def inventory(_)
+    def inventory(_args = nil)
       store.store
     end
 
@@ -42,7 +45,7 @@ module Gauss
 
       context.message
     rescue Gauss::StoreError::RecordNotFound => e
-      context.fail(error: e)
+      context.fail!(error: e)
     end
 
     def process_transaction(amount:)
@@ -59,6 +62,8 @@ module Gauss
     end
 
     private
+
+    attr_reader :changes_path, :products_path, :product, :quantity
 
     def store
       @store ||= Gauss::Store.new

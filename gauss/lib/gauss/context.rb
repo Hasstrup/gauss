@@ -13,7 +13,7 @@ module Gauss
 
     def fail!(error:)
       @success = false
-      errors.push(error)
+      @errors = [error]
 
       message
     end
@@ -21,7 +21,7 @@ module Gauss
     def succeed(message:)
       @errors = []
       @success = true
-      messages.push(message)
+      @messages = [message]
 
       message
     end

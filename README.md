@@ -1,6 +1,8 @@
 ### GAUSS
 
-Gauss is a pretty cool vending machine that runs on your terminal that has the following features
+Gauss is a pretty cool vending machine that runs on your terminal. 
+
+#### Features
 
 * Loading products & changes (from the CSV files at the root layer)
 * Getting a product 
@@ -27,6 +29,12 @@ NB: Please follow verbatim (for now :) )
 * Take {{ money ( e.g 1.2£, 5.0) }} -
 `After requesting an item, use this command to slot in cash, and receive change`
 
+#### Approach
+I opted to build a terminal application (as opposed to building a full UI set) because
+-  The terminal is the simplest way to get input from users(like us)
+- It makes the code lean and nice, without the need for adjusting to satisfy web interfaces
+- I did not want to clog the code with too many external dependencies (just to power up UI).
+- It's fun
 
 #### Specs 
 Specs are right now written in the gem and can be run by: 

@@ -20,9 +20,7 @@ module Gauss
             validations.push(options.merge(name: attr_name))
           end
 
-          def errors
-            @errors ||= {}
-          end
+      
 
           def validations
             @validations ||= []
@@ -65,7 +63,7 @@ module Gauss
       end
 
       def errors
-        self.class.errors
+        @errors ||= {}
       end
 
       def valid?

@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gauss/messages'
 require 'gauss/service/transaction'
 require 'gauss/context'
 require 'gauss/product'
-require 'gauss/vendor'
 
 RSpec.describe Gauss::Service::Transaction do
   let(:context) { Gauss::Context.new }

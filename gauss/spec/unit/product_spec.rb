@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gauss/product'
 
 RSpec.describe Gauss::Product do

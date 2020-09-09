@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gauss/context'
 
 RSpec.describe Gauss::Context do

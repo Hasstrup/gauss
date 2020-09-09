@@ -88,7 +88,6 @@ module Gauss
         if record.valid?
           next store.add(key: klass.store_key, entry: record.humanize)
         end
-
         raise Gauss::Error, "**#{klass.store_key} failed, errors: #{record.errors} at position: #{index}**"
       end
     rescue ::CSV::MalformedCSVError, Gauss::Error => e

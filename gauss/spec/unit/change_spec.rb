@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gauss/change'
 
 RSpec.describe Gauss::Change do

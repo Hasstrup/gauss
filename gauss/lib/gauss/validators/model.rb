@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'gauss/validators/messages'
+
 module Gauss
   module Validators
     module Model
@@ -18,9 +20,7 @@ module Gauss
             validations.push(options.merge(name: attr_name))
           end
 
-          def errors
-            @errors ||= {}
-          end
+      
 
           def validations
             @validations ||= []
@@ -57,12 +57,13 @@ module Gauss
                    validation_hash: validator.slice(:type,
                                                     :presence,
                                                     :min,
+                                                    :in,
                                                     :max).compact)
         end
       end
 
       def errors
-        self.class.errors
+        @errors ||= {}
       end
 
       def valid?
@@ -71,11 +72,8 @@ module Gauss
 
       def validate(attribute:, value:, validation_hash:)
         validation_hash.each do |key, hash_value|
-          unless self.class.send("validate_#{key}".to_sym, 
-                                 attribute: value, 
-                                 value: hash_value)
-            const_sym = "Gauss::Validators::Messages::#{key.upcase}".to_sym
-            message = const_get(const_sym)
+          unless self.class.send("validate_#{key}".to_sym, attribute: value, value: hash_value)
+            message = self.class.const_get("Gauss::Validators::Messages::#{key.upcase}")
             errors[attribute] = [*(errors[attribute] || []), "#{message}: #{hash_value}"]
           end
         end

@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
 require 'csv'
+require 'gauss/change'
 require 'gauss/context'
+require 'gauss/store'
+require 'gauss/product'
 require 'gauss/messages'
 require 'gauss/service/transaction'
 
 module Gauss
   # Gauss::Vendor main actor for loading and fetching products
   class Vendor
-    attr_reader :changes_path, :products_path, :context, :product, :quantity
+    attr_reader :context
 
     def initialize(products_path:, changes_path:)
       @products_path = products_path
@@ -16,7 +19,7 @@ module Gauss
       @context = Gauss::Context.new
     end
 
-    def reload(_args)
+    def reload(_args = nil)
       store.purge
       create_records
       context.succeed(message: Gauss::Messages::LOAD_SUCCESS) if context.success
@@ -24,28 +27,25 @@ module Gauss
       context.message
     end
 
-    def inventory(_)
+    def inventory(_args = nil)
       store.store
     end
 
     def fetch_product(name:, quantity:)
       store.fetch(key: name, store_key: Gauss::Product.store_key) do |record|
-        unless record
-          context.fail!(error: Gauss::Error.new(Gauss::Messages::RECORD_NOT_FOUND))
-          return context.message
-        end
-
         @product = Gauss::Product.new(*record)
         @quantity = quantity
         if product.count < quantity.to_i
-          context.fail!(error: Gauss::Error.new("I only have #{product.count} left"))
+          context.fail!(error: Gauss::Error.new("**I only have #{product.count} left**"))
         else
           price = (quantity.to_f * product.amount).round(2)
-          context.succeed(message: "That would cost you £#{price}, Please enter your money")
+          context.succeed(message: "**That would cost you £#{price}, Please enter your money**")
         end
       end
 
       context.message
+    rescue Gauss::StoreError::RecordNotFound => e
+      context.fail!(error: e)
     end
 
     def process_transaction(amount:)
@@ -61,11 +61,13 @@ module Gauss
       context.errors.any? ? context.message : humanize_change_payload(changes: context.payload)
     end
 
-    private
-
     def store
       @store ||= Gauss::Store.new
     end
+
+    private
+
+    attr_reader :changes_path, :products_path, :product, :quantity
 
     def create_records
       load_products
@@ -86,8 +88,7 @@ module Gauss
         if record.valid?
           next store.add(key: klass.store_key, entry: record.humanize)
         end
-
-        raise Gauss::Error, "#{klass.store_key} failed, errors: #{record.errors} at position: #{index}"
+        raise Gauss::Error, "**#{klass.store_key} failed, errors: #{record.errors} at position: #{index}**"
       end
     rescue ::CSV::MalformedCSVError, Gauss::Error => e
       context.fail!(error: e)

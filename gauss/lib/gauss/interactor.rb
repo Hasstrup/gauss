@@ -29,8 +29,6 @@ module Gauss
       run(initial: false)
     end
 
-    alias help run
-
     def fetch_product(cmd:)
       exe = cmd.dup
       exe.slice!('Give me').chomp
@@ -52,7 +50,9 @@ module Gauss
     end
 
     def execute_cmd(cmd:)
-      target_cmd = Gauss::Commands::REQUESTS.values.find { |cmnd| cmd.start_with?(cmnd.first) }
+      target_cmd = Gauss::Commands::REQUESTS.values.find do |cmnd|
+        cmd.start_with?(cmnd.first)
+      end
       puts send(Gauss::Commands::REQUESTS.key(target_cmd), cmd: cmd)
     end
 

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Gauss
+  # Gauss::Context holds errors, payload and messages of service ops
   class Context
     attr_reader :success, :errors, :messages, :payload
 
@@ -12,24 +13,26 @@ module Gauss
 
     def fail!(error:)
       @success = false
-      errors.push(error)
+      @errors = [error]
 
       message
     end
 
     def succeed(message:)
       @errors = []
-      messages.push(message)
+      @success = true
+      @messages = [message]
 
       message
     end
 
     def payload!(payload:)
+      @errors = []
       @payload = payload
     end
 
     def message
-      success ? messages.join(', ') : errors.map(&:message)
+      success ? messages.join(', ') : errors.map(&:message).join(', ')
     end
   end
 end

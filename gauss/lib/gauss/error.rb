@@ -1,18 +1,15 @@
 # frozen_string_literal: true
 
+require 'gauss/messages'
+
 module Gauss
   class Error < StandardError; end
-  class LoadError < Error
-    attr_reader :errors
-    def initialize(errors)
-      @errors = errors
+  class TransactionError < Error; end
+  class StoreError < Error
+    class RecordNotFound < StoreError
+      def message
+        Gauss::Messages::RECORD_NOT_FOUND
+      end
     end
-
-    def message
-      JSON.stringify(errors)
-    end
-  end
-
-  class TransactionError < Error
   end
 end

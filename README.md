@@ -45,4 +45,4 @@ I opted to build a terminal application (as opposed to building a full UI set) b
 Specs are right now written in the gem and can be run by: 
 `cd gauss && rspec`
 
-Feel free to contact me (hasstrup.ezekiel@gmail.com) if you run into any problems
+Feel free to contact me if you run into any problems

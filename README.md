@@ -19,7 +19,7 @@ Gauss is a pretty cool vending machine that runs on your terminal.
 * Download the code
 * You will be needing to have bundler installed
 * run `bundle install`
-* To fire up gauss run `bundle exec vendor.rb`
+* To fire up gauss run `bundle exec ruby vendor.rb`
 * Pass in instructions in the console and watch it happen!
 
 #### Registered Instructions
